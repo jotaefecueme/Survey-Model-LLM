@@ -111,11 +111,11 @@
         <h1>Survey Model LLM v0.2</h1>
         <label for="lastSystemTurn">last_system_turn:</label><br>
         <select id="lastSystemTurn" name="lastSystemTurn">
-          <option value="Hello. My name is Eliza, the Virtual Assistant of Lekta Company. Im reaching out regarding your recent contact with our helpline. Do I have the pleasure of speaking with Jose?">Hello. My name is Eliza, the Virtual Assistant of Lekta Company. Im reaching out regarding your recent contact with our helpline. Do I have the pleasure of speaking with Jose?</option>
-          <option value="Based on this contact, how likely are you to recommend Lekta Company to your friends or family? Please rate on a scale from 0 to 10.">Based on this contact, how likely are you to recommend Lekta Company to your friends or family? Please rate on a scale from 0 to 10.</option>
-          <option value="Did the consultant resolve your issue?">Did the consultant resolve your issue?</option>
-          <option value="How can we improve to better meet your needs?">How can we improve to better meet your needs?</option>
-               </select><br>
+        <option value="Hello. My name is Eliza, the Virtual Assistant of Lekta Company. Im reaching out regarding your recent contact with our helpline. Do I have the pleasure of speaking with Jose?">Hello. My name is Eliza, the Virtual Assistant of Lekta Company. Im reaching out regarding your recent contact with our helpline. Do I have the pleasure of speaking with Jose?</option>
+        <option value="Based on this contact, how likely are you to recommend Lekta Company to your friends or family? Please rate on a scale from 0 to 10.">Based on this contact, how likely are you to recommend Lekta Company to your friends or family? Please rate on a scale from 0 to 10.</option>
+        <option value="Did the consultant resolve your issue?">Did the consultant resolve your issue?</option>
+        <option value="How can we improve to better meet your needs?">How can we improve to better meet your needs?</option>
+        </select><br>
         <label for="user">current_user_input:</label><br>
         <textarea id="user" name="user" rows="4" cols="50"></textarea><br>
         <button id="submitButton">Enviar</button><br>
@@ -139,7 +139,7 @@
             console.log("Datos de la solicitud:", data);
 
             var xhr = new XMLHttpRequest();
-            xhr.open("POST", "http://95.60.72.15:1024/ask", true);
+            xhr.open("POST", "http://127.0.0.1:1024/ask", true);
             xhr.setRequestHeader("Content-Type", "application/json");
 
             xhr.onreadystatechange = function () {

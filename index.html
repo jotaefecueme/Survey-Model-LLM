@@ -95,6 +95,15 @@
         strong {
             color: #007bff;
         }
+
+        #curlCommand {
+            margin-top: 20px;
+            background-color: #eee;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: left;
+            display: none; /* Comenzamos oculto */
+        }
     </style>
 </head>
 <body>
@@ -109,8 +118,9 @@
         </select><br>
         <label for="user">current_user_input:</label><br>
         <textarea id="user" name="user" rows="4" cols="50"></textarea><br>
-        <button type="button" id="submitButton">Enviar</button><br>
+        <button id="submitButton" onclick="mostrarCurl()">Enviar</button><br>
         <div id="respuesta"></div>
+        <div id="curlCommand"></div>
     </div>
 
     <script>
@@ -150,6 +160,15 @@
             };
 
             xhr.send(JSON.stringify(data));
+        }
+
+        function mostrarCurl() {
+            var lastSystemTurn = document.getElementById("lastSystemTurn").value;
+            var user = document.getElementById("user").value;
+
+            var curlCommand = 'curl -X POST -H "Content-Type: application/json" -d \'{"question":"' + lastSystemTurn + '","user":"' + user + '"}\' http://95.60.72.15:1024/ask';
+            document.getElementById("curlCommand").innerText = curlCommand;
+            document.getElementById("curlCommand").style.display = "block"; // Mostrar el div
         }
 
         document.getElementById("submitButton").addEventListener("click", consultarServicio);

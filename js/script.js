@@ -1,5 +1,5 @@
 // Global variables
-var serverIP = "http://127.0.0.1";
+var serverIP = "http://95.60.72.15";
 var serverPort = "1024";
 
 function consultarServicio() {
@@ -43,7 +43,10 @@ function consultarServicio() {
     var timer; // Variable to hold the timer
 
     xhr.onreadystatechange = function () {
+        console.log("XHR state:", xhr.readyState); // Debugging: Log XHR state
         if (xhr.readyState === 4) {
+            console.log("XHR status:", xhr.status); // Debugging: Log XHR status
+
             // Hide loading indicator
             document.getElementById("loading").classList.remove("visible");
             document.getElementById("loading").classList.add("complete");

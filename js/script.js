@@ -1,5 +1,5 @@
 // Global variables
-var serverIP = "http://95.60.72.15";
+var serverIP = "https://95.60.72.15";
 var serverPort = "1024";
 
 function consultarServicio() {

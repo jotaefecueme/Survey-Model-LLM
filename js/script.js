@@ -3,6 +3,7 @@ var serverIP = "http://95.60.72.15";
 var serverPort = "1024";
 
 function consultarServicio() {
+    console.log("Button 'Submit' clicked"); // Debugging: Log button click event
     console.log("Requesting service...");
     document.getElementById("debugMessages").innerText = "Requesting service...";
 
@@ -97,7 +98,8 @@ function consultarServicio() {
     }, timeout);
 }
 
-document.getElementById("submitButton").addEventListener("click", function() {
+document.getElementById("submitButton").addEventListener("click", function(event) {
+    event.preventDefault(); // Prevent the default form submission
     console.log("Button 'Submit' clicked");
     document.getElementById("debugMessages").innerText = "Button 'Submit' clicked.";
     consultarServicio();

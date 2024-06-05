@@ -109,44 +109,50 @@
         </select><br>
         <label for="user">current_user_input:</label><br>
         <textarea id="user" name="user" rows="4" cols="50"></textarea><br>
-        <button onclick="consultarServicio()">Enviar</button><br>
+        <button id="submitButton">Enviar</button><br>
         <div id="respuesta"></div>
     </div>
 
     <script>
-           function consultarServicio() {
-               var lastSystemTurn = document.getElementById("lastSystemTurn").value;
-               var user = document.getElementById("user").value;
+        function consultarServicio() {
+            var startTime = new Date().getTime();
+            var lastSystemTurn = document.getElementById("lastSystemTurn").value;
+            var user = document.getElementById("user").value;
 
-               var data = {
-                   "question": lastSystemTurn,
-                   "user": user
-               };
+            var data = {
+                "question": lastSystemTurn,
+                "user": user
+            };
 
-               var xhr = new XMLHttpRequest();
-               xhr.open("POST", "http://127.0.0.1:1024/ask", true);
-               xhr.setRequestHeader("Content-Type", "application/json");
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "http://127.0.0.1:1024/ask", true);
+            xhr.setRequestHeader("Content-Type", "application/json");
 
-               xhr.onreadystatechange = function () {
-                   if (xhr.readyState === 4) {
-                       if (xhr.status === 200) {
-                           var respuesta = JSON.parse(xhr.responseText);
-                           console.log("Respuesta del servidor:", respuesta);
-                        
-                           var respuestaHTML = "<ul>";
-                           for (var key in respuesta) {
-                               respuestaHTML += "<li><strong>" + key + ":</strong> " + JSON.stringify(respuesta[key]) + "</li>";
-                           }
-                           respuestaHTML += "</ul>";
-                           document.getElementById("respuesta").innerHTML = respuestaHTML;
-                       } else {
-                           console.error("Error al consultar el servicio. Código de error:", xhr.status);
-                       }
-                   }
-               };
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        var endTime = new Date().getTime();
+                        var responseTime = (endTime - startTime) / 1000; // Convertir a segundos
+                        var respuesta = JSON.parse(xhr.responseText);
+                        console.log("Respuesta del servidor:", respuesta);
 
-               xhr.send(JSON.stringify(data));
-           }
-       </script>
-   </body>
-   </html>
+                        var respuestaHTML = "<ul>";
+                        for (var key in respuesta) {
+                            respuestaHTML += "<li><strong>" + key + ":</strong> " + JSON.stringify(respuesta[key]) + "</li>";
+                        }
+                        respuestaHTML += "</ul>";
+                        respuestaHTML += "<p>Response Time: " + responseTime + " seconds</p>";
+                        document.getElementById("respuesta").innerHTML = respuestaHTML;
+                    } else {
+                        console.error("Error al consultar el servicio. Código de error:", xhr.status);
+                    }
+                }
+            };
+
+            xhr.send(JSON.stringify(data));
+        }
+
+        document.getElementById("submitButton").addEventListener("click", consultarServicio);
+    </script>
+</body>
+</html>

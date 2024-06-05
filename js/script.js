@@ -3,7 +3,6 @@ var serverIP = "http://95.60.72.15";
 var serverPort = "1024";
 
 function consultarServicio() {
-    console.log("Button 'Submit' clicked"); // Debugging: Log button click event
     console.log("Requesting service...");
     document.getElementById("debugMessages").innerText = "Requesting service...";
 
@@ -44,10 +43,10 @@ function consultarServicio() {
     var timer; // Variable to hold the timer
 
     xhr.onreadystatechange = function () {
-        console.log("XHR state:", xhr.readyState); // Debugging: Log XHR state
-        if (xhr.readyState === 4) {
-            console.log("XHR status:", xhr.status); // Debugging: Log XHR status
+        console.log("ReadyState:", xhr.readyState);
+        console.log("Status:", xhr.status);
 
+        if (xhr.readyState === 4) {
             // Hide loading indicator
             document.getElementById("loading").classList.remove("visible");
             document.getElementById("loading").classList.add("complete");
@@ -98,8 +97,7 @@ function consultarServicio() {
     }, timeout);
 }
 
-document.getElementById("submitButton").addEventListener("click", function(event) {
-    event.preventDefault(); // Prevent the default form submission
+document.getElementById("submitButton").addEventListener("click", function() {
     console.log("Button 'Submit' clicked");
     document.getElementById("debugMessages").innerText = "Button 'Submit' clicked.";
     consultarServicio();

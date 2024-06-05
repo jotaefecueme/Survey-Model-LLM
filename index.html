@@ -5,191 +5,54 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Survey Model LLM v0.2</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Roboto', sans-serif;
-            background-color: #f9f9f9;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-
-        .container {
-            max-width: 600px;
-            padding: 30px;
-            background-color: #f5f5f5;
-            border-radius: 12px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-            text-align: center;
-            color: #333;
-        }
-
-        h1 {
-            color: #333;
-            margin-bottom: 30px;
-            font-weight: 700;
-            font-size: 28px;
-        }
-
-        label {
-            font-weight: bold;
-            color: #555;
-            display: block;
-            margin-bottom: 10px;
-            font-size: 16px;
-        }
-
-        select, textarea {
-            width: calc(100% - 20px);
-            padding: 12px;
-            margin-bottom: 20px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            box-sizing: border-box;
-            font-size: 16px;
-            outline: none;
-            transition: border-color 0.3s ease;
-        }
-
-        textarea {
-            height: 120px;
-        }
-
-        button {
-            padding: 12px 24px;
-            background-color: #007bff;
-            color: #fff;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-            font-size: 16px;
-            outline: none;
-        }
-
-        button:hover {
-            background-color: #0056b3;
-        }
-
-        #respuesta {
-            margin-top: 30px;
-            padding: 20px;
-            background-color: #f0f0f0;
-            border-radius: 8px;
-            text-align: left;
-        }
-
-        ul {
-            list-style-type: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        ul li {
-            margin-bottom: 10px;
-        }
-
-        strong {
-            color: #007bff;
-        }
-
-        #curlCommand {
-            margin-top: 20px;
-            background-color: #eee;
-            padding: 10px;
-            border-radius: 8px;
-            text-align: left;
-            display: none; /* Comenzamos oculto */
-        }
-    </style>
+    <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
     <div class="container">
-        <h1>Survey Model LLM v0.2</h1>
-        <label for="lastSystemTurn">last_system_turn:</label><br>
+        <h1>Survey Model LLM v0.2 (multilingual)</h1>
+        <label for="lastSystemTurn">Last System Turn:</label><br>
         <select id="lastSystemTurn" name="lastSystemTurn">
-        <option value="Hello. My name is Eliza, the Virtual Assistant of Lekta Company. Im reaching out regarding your recent contact with our helpline. Do I have the pleasure of speaking with Jose?">Hello. My name is Eliza, the Virtual Assistant of Lekta Company. Im reaching out regarding your recent contact with our helpline. Do I have the pleasure of speaking with Jose?</option>
-        <option value="Based on this contact, how likely are you to recommend Lekta Company to your friends or family? Please rate on a scale from 0 to 10.">Based on this contact, how likely are you to recommend Lekta Company to your friends or family? Please rate on a scale from 0 to 10.</option>
-        <option value="Did the consultant resolve your issue?">Did the consultant resolve your issue?</option>
-        <option value="How can we improve to better meet your needs?">How can we improve to better meet your needs?</option>
+            <option value="Hello. My name is Eliza, the Virtual Assistant of Lekta Company. Im reaching out regarding your recent contact with our helpline. Do I have the pleasure of speaking with Jose?">Hello. My name is Eliza, the Virtual Assistant of Lekta Company. Im reaching out regarding your recent contact with our helpline. Do I have the pleasure of speaking with Jose?</option>
+            <option value="Based on this contact, how likely are you to recommend Lekta Company to your friends or family? Please rate on a scale from 0 to 10.">Based on this contact, how likely are you to recommend Lekta Company to your friends or family? Please rate on a scale from 0 to 10.</option>
+            <option value="Did the consultant resolve your issue?">Did the consultant resolve your issue?</option>
+            <option value="How can we improve to better meet your needs?">How can we improve to better meet your needs?</option>
+            <option value="custom">(Write your own Last System Turn message)</option> <!-- Opción para entrada personalizada -->
         </select><br>
-        <label for="user">current_user_input:</label><br>
+        <div id="customInputContainer" style="display: none;"> <!-- Contenedor para la entrada personalizada -->
+            <label for="customInput">Last System Turn:</label><br>
+            <textarea id="customInput" name="customInput" rows="4" cols="50"></textarea><br>
+        </div>
+        <label for="user">Current User Input:</label><br>
         <textarea id="user" name="user" rows="4" cols="50"></textarea><br>
-        <button id="submitButton">Enviar</button><br>
-        <div id="respuesta"></div>
-        <div id="curlCommand" style="display: none;"></div> <!-- Div oculto inicialmente -->
-        <div id="debugMessages"></div> <!-- Div para mensajes de debug -->
+        <button id="submitButton">Submit</button><br>
+        <div id="response" style="margin-top: 30px;"></div>
+        <div id="curlCommand" style="display: none;"></div> <!-- Initially hidden div -->
+        <div id="debugMessages"></div> <!-- Debug messages div -->
+        <div id="loading" class="loading"></div> <!-- Loading indicator -->
     </div>
-
+    <script src="js/script.js"></script>
     <script>
-        function consultarServicio() {
-            console.log("Consultando servicio...");
-            var startTime = new Date().getTime();
-            var lastSystemTurn = document.getElementById("lastSystemTurn").value;
-            var user = document.getElementById("user").value;
-
-            var data = {
-                "question": lastSystemTurn,
-                "user": user
-            };
-
-            console.log("Datos de la solicitud:", data);
-
-            var xhr = new XMLHttpRequest();
-            xhr.open("POST", "http://95.60.72.15:1024/ask", true);
-            xhr.setRequestHeader("Content-Type", "application/json");
-
-            xhr.onreadystatechange = function () {
-                if (xhr.readyState === 4) {
-                    if (xhr.status === 200) {
-                        console.log("Respuesta recibida:", xhr.responseText);
-                        var endTime = new Date().getTime();
-                        var responseTime = (endTime - startTime) / 1000; // Convertir a segundos
-                        console.log("Tiempo de respuesta:", responseTime, "segundos");
-                        var respuesta = JSON.parse(xhr.responseText);
-                        console.log("Respuesta del servidor:", respuesta);
-
-                        var respuestaHTML = "<ul>";
-                        for (var key in respuesta) {
-                            respuestaHTML += "<li><strong>" + key + ":</strong> " + JSON.stringify(respuesta[key]) + "</li>";
-                        }
-                        respuestaHTML += "</ul>";
-                        respuestaHTML += "<p>Response Time: " + responseTime + " seconds</p>";
-                        document.getElementById("respuesta").innerHTML = respuestaHTML;
-                    } else {
-                        console.error("Error al consultar el servicio. Código de error:", xhr.status);
-                    }
-                }
-            };
-
-            xhr.send(JSON.stringify(data));
-        }
-
-        function mostrarCurl() {
-            console.log("Mostrando comando CURL...");
-            var lastSystemTurn = document.getElementById("lastSystemTurn").value;
-            var user = document.getElementById("user").value;
-
-            console.log("Valor de lastSystemTurn:", lastSystemTurn);
-            console.log("Valor de user:", user);
-
-            // Construir el comando CURL
-            var curlCommand = 'curl -X POST "http://95.60.72.15:1024/ask" -H "accept: application/json" -H "Content-Type: application/json" -d \'{"question":"' + lastSystemTurn + '", "user":"' + user + '"}\'';
-
-            // Mostrar el comando CURL en el div correspondiente
-            document.getElementById("curlCommand").innerText = curlCommand;
-            document.getElementById("curlCommand").style.display = "block"; // Mostrar el div
-
-            console.log("Comando CURL:", curlCommand);
-        }
+        document.getElementById("lastSystemTurn").addEventListener("change", function() {
+            var customInputContainer = document.getElementById("customInputContainer");
+            if (this.value === "custom") {
+                customInputContainer.style.display = "block";
+            } else {
+                customInputContainer.style.display = "none";
+            }
+        });
 
         document.getElementById("submitButton").addEventListener("click", function() {
-            console.log("Botón 'Enviar' clicado");
-            consultarServicio();
-            mostrarCurl();
+            var lastSystemTurn = document.getElementById("lastSystemTurn").value;
+            var user = document.getElementById("user").value;
+            var customInput = document.getElementById("customInput").value;
+
+            if (lastSystemTurn === "custom") {
+                lastSystemTurn = customInput;
+            }
+
+            // Aquí puedes continuar con la lógica para enviar la solicitud al servidor
+            console.log("Last System Turn:", lastSystemTurn);
+            console.log("Current User Input:", user);
         });
     </script>
 </body>

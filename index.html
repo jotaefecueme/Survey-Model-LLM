@@ -10,26 +10,36 @@
 <body>
     <div class="container">
         <h1>Survey Model LLM v0.2 (multilingual)</h1>
+
         <label for="lastSystemTurn">Last System Turn:</label><br>
         <select id="lastSystemTurn" name="lastSystemTurn">
-            <option value="Hello. My name is Eliza, the Virtual Assistant of Lekta Company. Im reaching out regarding your recent contact with our helpline. Do I have the pleasure of speaking with Jose?">Hello. My name is Eliza, the Virtual Assistant of Lekta Company. Im reaching out regarding your recent contact with our helpline. Do I have the pleasure of speaking with Jose?</option>
-            <option value="Based on this contact, how likely are you to recommend Lekta Company to your friends or family? Please rate on a scale from 0 to 10.">Based on this contact, how likely are you to recommend Lekta Company to your friends or family? Please rate on a scale from 0 to 10.</option>
+            <option value="Hello. My name is Eliza, the Virtual Assistant of Lekta Company. Im reaching out regarding your recent contact with our helpline. Do I have the pleasure of speaking with Jose?">
+                Hello. My name is Eliza, the Virtual Assistant of Lekta Company. Im reaching out regarding your recent contact with our helpline. Do I have the pleasure of speaking with Jose?
+            </option>
+            <option value="Based on this contact, how likely are you to recommend Lekta Company to your friends or family? Please rate on a scale from 0 to 10.">
+                Based on this contact, how likely are you to recommend Lekta Company to your friends or family? Please rate on a scale from 0 to 10.
+            </option>
             <option value="Did the consultant resolve your issue?">Did the consultant resolve your issue?</option>
             <option value="How can we improve to better meet your needs?">How can we improve to better meet your needs?</option>
-            <option value="custom">(Write your own Last System Turn message)</option> <!-- Opción para entrada personalizada -->
+            <option value="custom">(Write your own Last System Turn message)</option>
         </select><br>
-        <div id="customInputContainer" style="display: none;"> <!-- Contenedor para la entrada personalizada -->
+
+        <div id="customInputContainer" style="display: none;">
             <label for="customInput">Last System Turn:</label><br>
             <textarea id="customInput" name="customInput" rows="4" cols="50"></textarea><br>
         </div>
+
         <label for="user">Current User Input:</label><br>
-        <textarea id="user" name="user" rows="4" cols="50"></textarea><br>
+        <textarea id="user" name="user" rows="4" cols="50" aria-label="Current User Input"></textarea><br>
+
         <button id="submitButton">Submit</button><br>
+
         <div id="response" style="margin-top: 30px;"></div>
-        <div id="curlCommand" style="display: none;"></div> <!-- Initially hidden div -->
-        <div id="debugMessages"></div> <!-- Debug messages div -->
-        <div id="loading" class="loading"></div> <!-- Loading indicator -->
+        <div id="loading" class="loading"></div>
+        <div id="curlCommand" style="display: none;"></div>
+        <div id="debugMessages"></div>
     </div>
+
     <script src="js/script.js"></script>
     <script>
         document.getElementById("lastSystemTurn").addEventListener("change", function() {
@@ -50,9 +60,22 @@
                 lastSystemTurn = customInput;
             }
 
+            if (!lastSystemTurn || !user) {
+                alert("Both fields are required.");
+                return;
+            }
+
             // Aquí puedes continuar con la lógica para enviar la solicitud al servidor
             console.log("Last System Turn:", lastSystemTurn);
             console.log("Current User Input:", user);
+
+            // Mostrar loading indicator
+            document.getElementById("loading").style.display = "block";
+
+            // Simulación de solicitud al servidor
+            setTimeout(function() {
+                document.getElementById("loading").style.display = "none";
+            }, 2000);
         });
     </script>
 </body>

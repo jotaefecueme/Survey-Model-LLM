@@ -1,4 +1,6 @@
-/* CSS styles */
+/* CSS Styles */
+
+/* General Body Styles */
 body {
     font-family: 'Roboto', sans-serif;
     background-color: #f9f9f9;
@@ -10,6 +12,7 @@ body {
     height: 100vh;
 }
 
+/* Container Styles */
 .container {
     max-width: 800px;
     padding: 50px;
@@ -20,6 +23,7 @@ body {
     color: #333;
 }
 
+/* Heading Styles */
 h1 {
     color: #333;
     margin-bottom: 30px;
@@ -27,18 +31,20 @@ h1 {
     font-size: 28px;
 }
 
+/* Label Styles */
 label {
     font-weight: bold;
     color: #555;
-    display: inline-block; /* Added */
-    text-align: left; /* Added */
+    display: inline-block; /* Align labels and inputs */
+    text-align: left;
     margin-bottom: 10px;
     font-size: 16px;
-    width: 150px; /* Added width for alignment */
+    width: 150px; /* Fixed width for alignment */
 }
 
+/* Select and Textarea Styles */
 select, textarea {
-    width: calc(100% - 20px);
+    width: calc(100% - 20px); /* Ensure full width minus padding */
     padding: 12px;
     margin-bottom: 20px;
     border: 1px solid #ccc;
@@ -49,10 +55,12 @@ select, textarea {
     transition: border-color 0.3s ease;
 }
 
+/* Textarea Specific Styles */
 textarea {
     height: 120px;
 }
 
+/* Button Styles */
 button {
     padding: 12px 24px;
     background-color: #007bff;
@@ -65,11 +73,13 @@ button {
     outline: none;
 }
 
+/* Button Hover Styles */
 button:hover {
     background-color: #0056b3;
 }
 
-#respuesta {
+/* Response Container Styles */
+#response {
     margin-top: 30px;
     padding: 20px;
     background-color: #f0f0f0;
@@ -77,33 +87,55 @@ button:hover {
     text-align: left;
 }
 
+/* List Styles */
 ul {
     list-style-type: none;
     padding: 0;
     margin: 0;
 }
 
+/* List Item Styles */
 ul li {
     margin-bottom: 10px;
 }
 
+/* Strong Element Styles */
 strong {
     color: #007bff;
 }
 
+/* cURL Command Styles */
 #curlCommand {
-    margin-top: 20px;
+    margin-top: 30px;
     background-color: #eee;
     padding: 10px;
     border-radius: 8px;
-    text-align: left;
+    text-align: center;
     display: none; /* Initially hidden */
 }
 
+/* Debug Messages Styles */
 #debugMessages {
-    text-align: center; /* Added */
+    text-align: center;
+    margin-top: 30px;
 }
 
+/* Response Paragraph Styles */
 #response p {
-    text-align: center; /* Added */
+    text-align: left;
+    margin-top: 30px;
+}
+
+/* Loading Indicator Styles */
+.loading {
+    display: none; /* Hide by default */
+}
+
+.loading.visible {
+    display: block; /* Show when active */
+    /* Additional loading indicator styles can be added here */
+}
+
+.loading.complete {
+    display: none; /* Hide when complete */
 }

@@ -1,5 +1,5 @@
 // Global variables
-var serverIP = "https://95.60.72.15";
+var serverIP = "http://95.60.72.15";
 var serverPort = "1024";
 
 function consultarServicio() {
@@ -32,7 +32,7 @@ function consultarServicio() {
     console.log("Request data:", data);
 
     // Show loading indicator
-    document.getElementById("loading").classList.add("visible");
+    document.getElementById("loading").style.display = "block";
     document.getElementById("debugMessages").innerText = "Sending request to server...";
 
     var xhr = new XMLHttpRequest();
@@ -43,13 +43,9 @@ function consultarServicio() {
     var timer; // Variable to hold the timer
 
     xhr.onreadystatechange = function () {
-        console.log("ReadyState:", xhr.readyState);
-        console.log("Status:", xhr.status);
-
         if (xhr.readyState === 4) {
             // Hide loading indicator
-            document.getElementById("loading").classList.remove("visible");
-            document.getElementById("loading").classList.add("complete");
+            document.getElementById("loading").style.display = "none";
 
             // Clear the timer when the response is received
             clearTimeout(timer);
@@ -91,8 +87,7 @@ function consultarServicio() {
         console.error("Request timed out.");
         document.getElementById("debugMessages").innerText = "Request timed out. Service is unavailable.";
         document.getElementById("response").innerHTML = "<p>Service is unavailable. Please try again later.</p>";
-        document.getElementById("loading").classList.remove("visible");
-        document.getElementById("loading").classList.add("complete");
+        document.getElementById("loading").style.display = "none";
         xhr.abort(); // Abort the request if it takes too long
     }, timeout);
 }

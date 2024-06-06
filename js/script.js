@@ -1,4 +1,4 @@
-var serverIP = "http://127.0.0.1";
+var serverIP = "http://95.60.72.15";
 var serverPort = "1024";
 
 function consultarServicio() {

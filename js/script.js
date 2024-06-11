@@ -1,6 +1,4 @@
-// Global variables
-var serverIP = "http://95.60.72.15";
-var serverPort = "1024";
+let startTime;
 
 function displayMessage(message) {
     console.log(message);
@@ -31,65 +29,101 @@ function displayResponse(response) {
 
     const responseTimeMessage = `<p>Response time: ${responseTime} seconds</p>`;
     document.getElementById("response").innerHTML += responseTimeMessage;
+
+    document.getElementById("loading").style.display = "none";
 }
 
-function sendRequest(data) {
+async function sendRequest(data) {
     displayMessage("Sending request to server...");
     document.getElementById("loading").style.display = "block";
 
-    const xhr = new XMLHttpRequest();
-    xhr.open("POST", `${serverIP}:${serverPort}/ask`, true);
-    xhr.setRequestHeader("Content-Type", "application/json");
+    try {
+        const response = await Promise.race([
+            fetch(`${serverIP}:${serverPort}${apiEndpoint}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            }),
+            new Promise((_, reject) =>
+                setTimeout(() => reject(new Error('Request timed out')), 15000)
+            )
+        ]);
 
-    const timer = setTimeout(function() {
-        console.error("Request timed out.");
-        displayError("Request timed out. Service is unavailable.");
-        xhr.abort(); // Abort the request if it takes too long
-    }, 15000); // 15 seconds
+        if (!response.ok) {
+            throw new Error(`Error requesting service. Error code: ${response.status}`);
+        }
 
-    xhr.onreadystatechange = function() {
-        if (xhr.readyState === 4) {
-            clearTimeout(timer);
-            if (xhr.status === 200) {
-                const response = JSON.parse(xhr.responseText);
-                displayResponse(response);
-            } else {
-                displayError(`Error requesting service. Error code: ${xhr.status}`);
-            }
+        const responseData = await response.json();
+        displayResponse(responseData);
+    } catch (error) {
+        displayError(`Failed to fetch: ${error.message}`);
+    }
+}
+
+// Función para realizar la consulta al servicio
+function consultarServicio() {
+    const data = {
+        model: "metrica-v03",
+        prompt: "last_system_turn: im talking with john?\ncurrent_user_input: i give u a 4",
+        stream: false,
+        raw: false,
+        keep_alive: "3600m",
+        options: {
+            temperature: 0
         }
     };
 
-    xhr.send(JSON.stringify(data));
+    fetch('http://95.60.72.15:11434/api/generate', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => {
+        // Verificar si la respuesta es exitosa
+        if (!response.ok) {
+            throw new Error(`Error: ${response.status} - ${response.statusText}`);
+        }
+        // Devolver la respuesta como JSON
+        return response.json();
+    })
+    .then(data => {
+        // Manejar los datos de la respuesta
+        console.log('Respuesta del servidor:', data);
+        // Mostrar la respuesta en la página
+        mostrarRespuesta(data);
+    })
+    .catch(error => {
+        // Manejar errores
+        console.error('Error al hacer la solicitud:', error);
+        // Mostrar el error en la página
+        mostrarError(error.message);
+    });
 }
 
-function consultarServicio() {
-    displayMessage("Requesting service...");
-    document.getElementById("loading").style.display = "block";
-
-    const startTime = new Date().getTime();
-    const lastSystemTurn = document.getElementById("lastSystemTurn").value.trim();
-    const user = document.getElementById("user").value.trim();
-
-    if (!user) {
-        displayError("Please enter a user message.");
-        return;
-    }
-
-    const customInput = document.getElementById("customInput").value.trim();
-    const systemTurn = customInput ? customInput : lastSystemTurn;
-
-    const data = {
-        "question": systemTurn,
-        "user": user
-    };
-
-    displayMessage("Request data:");
-    console.log(data);
-
-    sendRequest(data);
+// Función para mostrar la respuesta en la página
+function mostrarRespuesta(responseData) {
+    const responseHTML = `
+        <p>Respuesta recibida del servidor:</p>
+        <pre>${JSON.stringify(responseData, null, 2)}</pre>
+    `;
+    document.getElementById("response").innerHTML = responseHTML;
 }
 
+// Función para mostrar errores en la página
+function mostrarError(errorMessage) {
+    const errorHTML = `
+        <p>Error al realizar la solicitud:</p>
+        <p>${errorMessage}</p>
+    `;
+    document.getElementById("response").innerHTML = errorHTML;
+}
+
+// Llamar a la función consultarServicio al hacer clic en el botón de enviar
 document.getElementById("submitButton").addEventListener("click", function() {
-    displayMessage("Button 'Submit' clicked.");
+    console.log("Botón 'Enviar' clickeado.");
     consultarServicio();
 });

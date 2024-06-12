@@ -39,7 +39,7 @@ async function sendRequest(data) {
 
     try {
         const response = await Promise.race([
-            fetch(`${serverIP}:${serverPort}${apiEndpoint}`, {
+            fetch('https://c700-95-60-72-15.ngrok-free.app/api/generate', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -62,7 +62,6 @@ async function sendRequest(data) {
     }
 }
 
-// Función para realizar la consulta al servicio
 function consultarServicio() {
     const data = {
         model: "metrica-v03",
@@ -75,36 +74,9 @@ function consultarServicio() {
         }
     };
 
-    fetch('http://95.60.72.15:11434/api/generate', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-    })
-    .then(response => {
-        // Verificar si la respuesta es exitosa
-        if (!response.ok) {
-            throw new Error(`Error: ${response.status} - ${response.statusText}`);
-        }
-        // Devolver la respuesta como JSON
-        return response.json();
-    })
-    .then(data => {
-        // Manejar los datos de la respuesta
-        console.log('Respuesta del servidor:', data);
-        // Mostrar la respuesta en la página
-        mostrarRespuesta(data);
-    })
-    .catch(error => {
-        // Manejar errores
-        console.error('Error al hacer la solicitud:', error);
-        // Mostrar el error en la página
-        mostrarError(error.message);
-    });
+    sendRequest(data);
 }
 
-// Función para mostrar la respuesta en la página
 function mostrarRespuesta(responseData) {
     const responseHTML = `
         <p>Respuesta recibida del servidor:</p>
@@ -113,7 +85,6 @@ function mostrarRespuesta(responseData) {
     document.getElementById("response").innerHTML = responseHTML;
 }
 
-// Función para mostrar errores en la página
 function mostrarError(errorMessage) {
     const errorHTML = `
         <p>Error al realizar la solicitud:</p>
@@ -122,8 +93,6 @@ function mostrarError(errorMessage) {
     document.getElementById("response").innerHTML = errorHTML;
 }
 
-// Llamar a la función consultarServicio al hacer clic en el botón de enviar
 document.getElementById("submitButton").addEventListener("click", function() {
-    console.log("Botón 'Enviar' clickeado.");
     consultarServicio();
 });

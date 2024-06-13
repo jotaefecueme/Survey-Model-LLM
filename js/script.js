@@ -108,14 +108,21 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Cargar la URL de Ngrok desde config.json
-    fetch('config.json')
-        .then(response => response.json())
-        .then(config => {
-            serverURL = config.ngrok_url;
-            console.log(`Server URL set to: ${serverURL}`);
-        })
-        .catch(error => {
-            console.error('Error loading config:', error);
-            displayError('Error loading configuration.');
-        });
+    // Cargar la URL de Ngrok desde config.json
+fetch('config.json')
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`Failed to load config.json (${response.status} ${response.statusText})`);
+        }
+        return response.json();
+    })
+    .then(config => {
+        serverURL = config.ngrok_url;
+        console.log(`Server URL set to: ${serverURL}`);
+    })
+    .catch(error => {
+        console.error('Error loading config:', error);
+        displayError('Error loading configuration.');
+    });
+
 });

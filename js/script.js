@@ -1,13 +1,13 @@
 // Global variables
-var serverURL = "";
+var serverURL = ""; // Esta variable será actualizada con la URL de Ngrok desde config.json
 var startTime;
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Load server URL from config.json
+    // Cargar la URL del servidor desde config.json
     fetch('config.json')
         .then(response => response.json())
         .then(config => {
-            serverURL = config.ngrok_url;
+            serverURL = config.ngrok_url; // Actualiza serverURL con la URL de Ngrok
             console.log(`Server URL set to: ${serverURL}`);
         })
         .catch(error => {

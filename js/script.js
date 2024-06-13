@@ -1,98 +1,109 @@
-let startTime;
+// Global variables
+var serverURL = "https://2225-95-60-72-15.ngrok-free.app"; // Actualiza con la URL de Ngrok
+var startTime;
 
-function displayMessage(message) {
-    console.log(message);
-    document.getElementById("debugMessages").innerText = message;
-}
+document.addEventListener('DOMContentLoaded', function() {
+    var lastSystemTurnSelect = document.getElementById('lastSystemTurn');
+    var customInputContainer = document.getElementById('customInputContainer');
+    var submitButton = document.getElementById('submitButton');
+    var responseContainer = document.getElementById('response');
+    var loading = document.getElementById('loading');
+    var curlCommand = document.getElementById('curlCommand');
+    var debugMessages = document.getElementById('debugMessages');
 
-function displayError(errorMessage) {
-    console.error(errorMessage);
-    document.getElementById("debugMessages").innerText = errorMessage;
-    document.getElementById("response").innerHTML = `<p>${errorMessage}</p>`;
-    document.getElementById("loading").style.display = "none";
-}
+    lastSystemTurnSelect.addEventListener('change', function() {
+        if (this.value === 'custom') {
+            customInputContainer.style.display = 'block';
+        } else {
+            customInputContainer.style.display = 'none';
+        }
+    });
 
-function displayResponse(response) {
-    console.log("Response received:", response);
-    displayMessage("Response received from server");
-    const endTime = new Date().getTime();
-    const responseTime = (endTime - startTime) / 1000; // Convert to seconds
-    console.log("Response time:", responseTime, "seconds");
+    submitButton.addEventListener('click', function() {
+        displayMessage("Button 'Submit' clicked.");
+        consultarServicio();
+    });
 
-    let responseHTML = "<ul>";
-    for (const key in response) {
-        responseHTML += `<li><strong>${key}:</strong> ${JSON.stringify(response[key])}</li>`;
+    function displayMessage(message) {
+        console.log(message);
+        debugMessages.innerText = message;
     }
-    responseHTML += "</ul>";
 
-    document.getElementById("response").innerHTML = responseHTML;
+    function displayError(errorMessage) {
+        console.error(errorMessage);
+        debugMessages.innerText = errorMessage;
+        responseContainer.innerHTML = `<p>${errorMessage}</p>`;
+        loading.style.display = "none";
+    }
 
-    const responseTimeMessage = `<p>Response time: ${responseTime} seconds</p>`;
-    document.getElementById("response").innerHTML += responseTimeMessage;
+    function displayResponse(response) {
+        console.log("Response received:", response);
+        displayMessage("Response received from server");
+        const endTime = new Date().getTime();
+        const responseTime = (endTime - startTime) / 1000; // Convert to seconds
+        console.log("Response time:", responseTime, "seconds");
 
-    document.getElementById("loading").style.display = "none";
-}
+        let responseHTML = "<ul>";
+        for (const key in response) {
+            responseHTML += `<li><strong>${key}:</strong> ${JSON.stringify(response[key])}</li>`;
+        }
+        responseHTML += "</ul>";
 
-async function sendRequest(data) {
-    displayMessage("Sending request to server...");
-    document.getElementById("loading").style.display = "block";
+        responseContainer.innerHTML = responseHTML;
 
-    try {
-        const response = await Promise.race([
-            fetch('https://c700-95-60-72-15.ngrok-free.app/api/generate', {
-                method: 'POST',
+        const responseTimeMessage = `<p>Response time: ${responseTime} seconds</p>`;
+        responseContainer.innerHTML += responseTimeMessage;
+        loading.style.display = "none";
+    }
+
+    async function sendRequest(data) {
+        displayMessage("Sending request to server...");
+        loading.style.display = "block";
+
+        try {
+            const response = await fetch(`${serverURL}/ask`, {
+                method: "POST",
                 headers: {
-                    'Content-Type': 'application/json'
+                    "Content-Type": "application/json"
                 },
                 body: JSON.stringify(data)
-            }),
-            new Promise((_, reject) =>
-                setTimeout(() => reject(new Error('Request timed out')), 15000)
-            )
-        ]);
+            });
 
-        if (!response.ok) {
-            throw new Error(`Error requesting service. Error code: ${response.status}`);
+            if (!response.ok) {
+                throw new Error(`Error requesting service. Error code: ${response.status}`);
+            }
+
+            const responseData = await response.json();
+            displayResponse(responseData);
+        } catch (error) {
+            displayError(error.message);
         }
-
-        const responseData = await response.json();
-        displayResponse(responseData);
-    } catch (error) {
-        displayError(`Failed to fetch: ${error.message}`);
     }
-}
 
-function consultarServicio() {
-    const data = {
-        model: "metrica-v03",
-        prompt: "last_system_turn: im talking with john?\ncurrent_user_input: i give u a 4",
-        stream: false,
-        raw: false,
-        keep_alive: "3600m",
-        options: {
-            temperature: 0
+    function consultarServicio() {
+        displayMessage("Requesting service...");
+        loading.style.display = "block";
+
+        startTime = new Date().getTime();
+        const lastSystemTurn = lastSystemTurnSelect.value.trim();
+        const user = document.getElementById("user").value.trim();
+
+        if (!user) {
+            displayError("Please enter a user message.");
+            return;
         }
-    };
 
-    sendRequest(data);
-}
+        const customInput = document.getElementById("customInput").value.trim();
+        const systemTurn = customInput ? customInput : lastSystemTurn;
 
-function mostrarRespuesta(responseData) {
-    const responseHTML = `
-        <p>Respuesta recibida del servidor:</p>
-        <pre>${JSON.stringify(responseData, null, 2)}</pre>
-    `;
-    document.getElementById("response").innerHTML = responseHTML;
-}
+        const data = {
+            "question": systemTurn,
+            "user": user
+        };
 
-function mostrarError(errorMessage) {
-    const errorHTML = `
-        <p>Error al realizar la solicitud:</p>
-        <p>${errorMessage}</p>
-    `;
-    document.getElementById("response").innerHTML = errorHTML;
-}
+        displayMessage("Request data:");
+        console.log(data);
 
-document.getElementById("submitButton").addEventListener("click", function() {
-    consultarServicio();
+        sendRequest(data);
+    }
 });

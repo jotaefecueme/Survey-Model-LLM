@@ -5,15 +5,20 @@ var startTime;
 document.addEventListener('DOMContentLoaded', function() {
     // Cargar la URL del servidor desde config.json
     fetch('config.json')
-        .then(response => response.json())
-        .then(config => {
-            serverURL = config.ngrok_url; // Actualiza serverURL con la URL de Ngrok
-            console.log(`Server URL set to: ${serverURL}`);
-        })
-        .catch(error => {
-            console.error('Error loading config:', error);
-            displayError('Error loading configuration.');
-        });
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(config => {
+        serverURL = config.ngrok_url; // Actualiza serverURL con la URL de Ngrok
+        console.log(`Server URL set to: ${serverURL}`);
+    })
+    .catch(error => {
+        console.error('Error loading config:', error);
+        displayError('Error loading configuration.'); // Muestra un mensaje de error al usuario
+    });
 
     var lastSystemTurnSelect = document.getElementById('lastSystemTurn');
     var customInputContainer = document.getElementById('customInputContainer');

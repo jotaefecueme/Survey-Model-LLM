@@ -1,8 +1,20 @@
 // Global variables
-var serverURL = "https://2225-95-60-72-15.ngrok-free.app"; // Actualiza con la URL de Ngrok
+var serverURL = "";
 var startTime;
 
 document.addEventListener('DOMContentLoaded', function() {
+    // Load server URL from config.json
+    fetch('config.json')
+        .then(response => response.json())
+        .then(config => {
+            serverURL = config.ngrok_url;
+            console.log(`Server URL set to: ${serverURL}`);
+        })
+        .catch(error => {
+            console.error('Error loading config:', error);
+            displayError('Error loading configuration.');
+        });
+
     var lastSystemTurnSelect = document.getElementById('lastSystemTurn');
     var customInputContainer = document.getElementById('customInputContainer');
     var submitButton = document.getElementById('submitButton');
